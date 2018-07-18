@@ -211,7 +211,7 @@ up() {
 
 down() {
     if [ ! -e $vars_file ]; then
-      echo "please create a enviroment first with 'uaa-deployment up'"
+      echo "please create a enviroment first with 'u up'"
       exit 1
     fi
 
@@ -220,8 +220,8 @@ down() {
 }
 
 clean() {
-  if curl -m 1 -k -s "https://$(bosh int <(uaa-deployment vars) --path /internal_ip):8443/login" | grep Version &>/dev/null ; then
-    echo "Your UAA enviroment is still running, please tear it down with 'uaa-deployment down --clean'"
+  if curl -m 1 -k -s "https://$(bosh int <(u vars) --path /internal_ip):8443/login" | grep Version &>/dev/null ; then
+    echo "Your UAA enviroment is still running, please tear it down with 'u down --clean'"
     exit 1
   fi
   rm -rf ${state}
