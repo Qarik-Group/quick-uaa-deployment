@@ -145,6 +145,7 @@ usage() {
     echo "  down -- deletes VM with bosh delete-env - can be used with --clean"
     echo "  clean -- start with a clean enviorment - use this only after you've torn down your env"
     echo "  ssh -- ssh into the UAA VM"
+    echo "  logs -- streaming logs from UAA/Postgres"
     echo "  env -- sourceable envrionment variables for cli clients"
     echo "  int -- wrapper for 'bosh int' for the bosh manifest"
     echo "  info -- UAA information"
@@ -395,6 +396,10 @@ _ssh() {
     rm ${tmp_config}
 }
 
+logs() {
+    _ssh sudo tail -f /var/vcap/sys/log/*/*.log
+}
+
 _ensure_bosh_cli_installed
 _ensure_uaa_cli_installed
 case "$1" in
@@ -492,6 +497,11 @@ case "$1" in
     ssh)
         shift
         _ssh "$@"
+        ;;
+
+    logs)
+        shift
+        logs "$@"
         ;;
 
     int)
