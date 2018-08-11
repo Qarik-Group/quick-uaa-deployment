@@ -69,3 +69,10 @@ The JSON output might look similar to:
 ```json
 {"app":{"version":"4.19.0"},"links":{"uaa":"https://192.168.50.6:8443","passwd":"/forgot_password","login":"https://192.168.50.6:8443","register":"/create_account"},"zone_name":"uaa","entityID":"192.168.50.6:8443","commit_id":"7897100","idpDefinitions":{},"prompts":{"username":["text","Email"],"password":["password","Password"]},"timestamp":"2018-06-13T12:02:09-0700"}
 ```
+
+## Example client applications
+
+You can find a selection of example client applications at:
+
+* https://github.com/starkandwayne/ultimate-guide-to-uaa-examples
+
