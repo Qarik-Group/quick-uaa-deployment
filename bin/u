@@ -221,13 +221,18 @@ down() {
 }
 
 clean() {
-  if curl -m 1 -k -s "https://$(bosh int <(u vars) --path /internal_ip):8443/login" | grep Version &>/dev/null ; then
-    echo "Your UAA enviroment is still running, please tear it down with 'u down --clean'"
-    exit 1
-  fi
-  rm -rf ${state}
-  mv ${vars_file} ${vars_file}.bck
-  echo "'state' dir has been cleaned and 'vars.yml' has been moved to 'vars.yml.bck'"
+    if [[ -f vars.yml ]]; then
+        if curl -m 1 -k -s "https://$(bosh int <(u vars) --path /internal_ip):8443/login" | grep Version &>/dev/null ; then
+            echo "Your UAA enviroment is still running, please tear it down with 'u down --clean'"
+            exit 1
+        fi
+        rm -rf ${state}
+        mv ${vars_file} ${vars_file}.bck
+        echo "'state' dir has been cleaned and 'vars.yml' has been moved to 'vars.yml.bck'"
+    else
+        rm -rf ${state}
+        echo "'state' dir has been cleaned; there was no existing vars.yml"
+    fi
 }
 
 vars() {
