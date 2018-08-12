@@ -474,10 +474,6 @@ case "$1" in
         env "$@"
         ;;
 
-    vars)
-        vars "$@"
-        ;;
-
     info)
         info "$@"
         ;;
@@ -512,6 +508,20 @@ case "$1" in
     int)
         shift
         int "$@"
+        ;;
+
+    vars)
+        vars "$@"
+        ;;
+
+    ca_cert)
+        shift
+        ca_cert
+        ;;
+
+    cacert)
+        shift
+        ca_cert
         ;;
 
     *)
