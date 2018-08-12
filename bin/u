@@ -139,6 +139,10 @@ ca_cert() {
     echo $ca_cert_file
 }
 
+url() {
+    int --path /instance_groups/0/jobs/name=uaa/properties/uaa/url
+}
+
 usage() {
     echo "UAA Deployment CLI v${version:-(development)}"
     echo "  up -- creates the UAA VM with bosh create-env"
@@ -151,7 +155,8 @@ usage() {
     echo "  info -- UAA information"
     # echo "  bbr -- backup & restore UAA" - WIP
     echo "  auth-client -- configures uaa cli as a client only"
-    echo "  auth-user -- authenticate uaa cli as an admin user"
+    echo "  url -- URL for UAA"
+    echo "  cacert -- path to CA certificate"
     exit 1
 }
 
@@ -269,14 +274,14 @@ env() {
     if [[ ! -f ${vars_store} ]]; then
         exit 0
     fi
-    echo "export UAA_URL=$(int --path /instance_groups/0/jobs/name=uaa/properties/uaa/url)"
+    echo "export UAA_URL=$(url)"
     echo "export UAA_CA_CERT='$(cat $(ca_cert))'"
     echo "export UAA_CA_CERT_FILE='$(ca_cert)'"
 }
 
 info() {
     echo "UAA:"
-    echo "  url: $(int --path /instance_groups/0/jobs/name=uaa/properties/uaa/url)"
+    echo "  url: $(url)"
     echo "  client: uaa_admin"
     echo "  client_secret: $(int --path /instance_groups/0/jobs/name=uaa/properties/uaa/clients/uaa_admin/secret)"
     echo "  username: $(int --path /instance_groups/0/jobs/name=uaa/properties/uaa/scim/users/0/name)"
@@ -344,17 +349,17 @@ _ensure_uaa_cli_installed() {
 }
 
 _uaac() {
-    faketty uaac target $(int --path /instance_groups/0/jobs/name=uaa/properties/uaa/url) --ca-cert $(ca_cert)
+    faketty uaac target $(url) --ca-cert $(ca_cert)
     faketty uaac token client get uaa_admin --secret $(int --path /instance_groups/0/jobs/name=uaa/properties/uaa/clients/uaa_admin/secret)
 }
 
 _uaa_auth_client() {
-    faketty uaa target $(int --path /instance_groups/0/jobs/name=uaa/properties/uaa/url) --skip-ssl-validation "$@"
+    faketty uaa target $(url) --skip-ssl-validation "$@"
     faketty uaa get-client-credentials-token uaa_admin --client_secret $(int --path /instance_groups/0/jobs/name=uaa/properties/uaa/clients/uaa_admin/secret) "$@"
 }
 
 _uaa_auth_user() {
-    faketty uaa target $(int --path /instance_groups/0/jobs/name=uaa/properties/uaa/url) --skip-ssl-validation "$@"
+    faketty uaa target $(url) --skip-ssl-validation "$@"
     faketty uaa get-password-token uaa_cli -s "$(int --path /instance_groups/0/jobs/name=uaa/properties/uaa/clients/uaa_cli/secret)" -u $(int --path /instance_groups/0/jobs/name=uaa/properties/uaa/scim/users/0/name) -p $(int --path /instance_groups/0/jobs/name=uaa/properties/uaa/scim/users/0/password) "$@"
 }
 
@@ -512,6 +517,11 @@ case "$1" in
 
     vars)
         vars "$@"
+        ;;
+
+    url)
+        shift
+        url
         ;;
 
     ca_cert)
