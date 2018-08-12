@@ -51,13 +51,6 @@
         NetworkVlan:
           Id: ((sl_vlan_private))
 
-# Add CPI job
-- type: replace
-  path: /instance_groups/name=bosh/jobs/-
-  value: &cpi_job
-    name: softlayer_cpi
-    release: bosh-softlayer-cpi
-
 - type: replace
   path: /instance_groups/name=bosh/networks/-
   value:
@@ -65,23 +58,13 @@
     default: [gateway, dns]
 
 - type: replace
-  path: /instance_groups/name=bosh/properties/director/cpi_job?
-  value: softlayer_cpi
-
-- type: replace
-  path: /instance_groups/name=bosh/properties/director/enable_virtual_delete_vms?
-  value: true
-
-- type: replace
   path: /cloud_provider/template?
-  value: *cpi_job
-
-- type: replace
-  path: /instance_groups/name=bosh/properties/softlayer?
-  value: &softlayer
-    username: ((sl_username))
-    apiKey: ((sl_api_key))
+  value:
+    name: softlayer_cpi
+    release: bosh-softlayer-cpi
 
 - type: replace
   path: /cloud_provider/properties/softlayer?
-  value: *softlayer
+  value:
+    username: ((sl_username))
+    apiKey: ((sl_api_key))

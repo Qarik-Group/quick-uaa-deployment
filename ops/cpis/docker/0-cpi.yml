@@ -31,35 +31,11 @@
     - 8443/tcp # uaa
     - 8080/tcp # cfg serv
 
-# Add CPI job
-- type: replace
-  path: /instance_groups/name=bosh/jobs/-
-  value: &cpi_job
-    name: docker_cpi
-    release: bosh-docker-cpi
-
-- type: replace
-  path: /instance_groups/name=bosh/properties/director/cpi_job?
-  value: docker_cpi
-
 - type: replace
   path: /cloud_provider/template?
-  value: *cpi_job
-
-- type: replace
-  path: /instance_groups/name=bosh/properties/docker_cpi?
   value:
-    docker:
-      host: ((docker_host))
-      tls: ((docker_tls))
-    agent: # todo remove
-      mbus: nats://nats:((nats_password))@((internal_ip)):4222
-      blobstore:
-        provider: dav
-        options:
-          endpoint: http://((internal_ip)):25250
-          user: agent
-          password: ((blobstore_agent_password))
+    name: docker_cpi
+    release: bosh-docker-cpi
 
 - type: replace
   path: /cloud_provider/properties/docker_cpi?

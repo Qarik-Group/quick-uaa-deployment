@@ -34,36 +34,18 @@
     ephemeral_external_ip: false
     tags: ((tags))
 
-# Add CPI job
 - type: replace
-  path: /instance_groups/name=bosh/jobs/-
-  value: &cpi_job
+  path: /cloud_provider/template?
+  value:
     name: google_cpi
     release: bosh-google-cpi
 
 - type: replace
-  path: /instance_groups/name=bosh/properties/director/cpi_job?
-  value: google_cpi
-
-- type: replace
-  path: /cloud_provider/template?
-  value: *cpi_job
-
-- type: replace
-  path: /instance_groups/name=bosh/properties/google?
-  value: &cpi_conf
+  path: /cloud_provider/properties/google?
+  value:
     project: ((project_id))
     json_key: ((gcp_credentials_json))
 
 - type: replace
-  path: /cloud_provider/properties/google?
-  value: *cpi_conf
-
-# Use GCP NTP
-- type: replace
-  path: /instance_groups/name=bosh/properties/ntp
-  value: &ntp [169.254.169.254]
-
-- type: replace
   path: /cloud_provider/properties/ntp
-  value: *ntp
+  value: [169.254.169.254]

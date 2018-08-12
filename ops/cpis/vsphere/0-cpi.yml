@@ -25,24 +25,15 @@
   path: /networks/name=default/subnets/0/cloud_properties?
   value: {name: ((network_name))}
 
-# Add CPI job
 - type: replace
-  path: /instance_groups/name=bosh/jobs/-
-  value: &cpi_job
+  path: /cloud_provider/template?
+  value:
     name: vsphere_cpi
     release: bosh-vsphere-cpi
 
 - type: replace
-  path: /instance_groups/name=bosh/properties/director/cpi_job?
-  value: vsphere_cpi
-
-- type: replace
-  path: /cloud_provider/template?
-  value: *cpi_job
-
-- type: replace
-  path: /instance_groups/name=bosh/properties/vcenter?
-  value: &vcenter
+  path: /cloud_provider/properties/vcenter?
+  value:
     address: ((vcenter_ip))
     user: ((vcenter_user))
     password: ((vcenter_password))
@@ -55,7 +46,3 @@
       disk_path: ((vcenter_disks))
       clusters:
       - ((vcenter_cluster)): {}
-
-- type: replace
-  path: /cloud_provider/properties/vcenter?
-  value: *vcenter
