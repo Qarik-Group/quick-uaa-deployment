@@ -4,28 +4,11 @@ set -eu
 
 git clone ${REPO_ROOT:?required} ${REPO_OUT:?required}
 
-pushd cfcr-manifests
-tar xfz source.tar.gz
-popd
-raw_cfcr_manifests=$(ls -d cfcr-manifests/cloudfoundry-incubator-kubo-deployment*/manifests)
-
 STEMCELL_OS=${STEMCELL_OS:-ubuntu-xenial}
 STEMCELL_VERSION=$(cat stemcell/version)
 STEMCELL_MAJOR_VERSION="${STEMCELL_VERSION%.*}"
 
 releases=($(ls -d *-compiled-release))
-
-cat > ${REPO_OUT}/use-compiled-releases.yml <<YAML
----
-- type: replace
-  path: /stemcells
-  value:
-  - alias: default
-    os: ubuntu-xenial
-    version: "${STEMCELL_MAJOR_VERSION}.latest"
-
-YAML
-
 for release in "${releases[@]}"; do
 
   tar -xzf $release/*.tgz $( tar -tzf $release/*.tgz | grep 'release.MF' )
@@ -34,8 +17,8 @@ for release in "${releases[@]}"; do
   release_url=$(cat $release/url)
   release_sha1=$(sha1sum $release/*.tgz | awk '{print $1}')
 
-  cat >> ${REPO_OUT}/use-compiled-releases.yml <<-YAML
-- path: /releases/name=${release_name}
+  cat > ${REPO_OUT}/ops/9-$release_name-compiled-release.yml <<-YAML
+- path: /releases/name=${release_name}?
   type: replace
   value:
     name:    "${release_name}"
@@ -49,15 +32,6 @@ for release in "${releases[@]}"; do
 YAML
 done
 
-rm -rf cfcr
-mkdir -p ops-files helper
-cp -r $raw_cfcr_manifests/ops-files ${REPO_OUT}/
-cp -r $raw_cfcr_manifests/helper    ${REPO_OUT}/
-
-spruce merge --go-patch \
-  $raw_cfcr_manifests/cfcr.yml \
-  ${REPO_OUT}/use-compiled-releases.yml > ${REPO_OUT}/cfcr.yml
-
 if [[ -z $(git config --global user.email) ]]; then
   git config --global user.email "${GIT_EMAIL}"
 fi
@@ -69,5 +43,5 @@ pushd $REPO_OUT
   git merge --no-edit ${REPO_OUT_BRANCH}
   git add -A
   git status
-  git commit -m "Bumped cfcr.yml"
+  git commit -m "Bumped compiled releases/stemcell"
 popd
