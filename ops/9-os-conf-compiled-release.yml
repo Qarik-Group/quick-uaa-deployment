@@ -1,7 +1,11 @@
-- type: replace
-  path: /releases/name=os-conf?
+- path: /releases/name=os-conf?
+  type: replace
   value:
-    name: os-conf
-    version: 18
-    url: https://s3-eu-west-1.amazonaws.com/bucc-compiled-releases/os-conf-18-ubuntu-trusty-3468.21-20180214-120653-595127092.tgz
-    sha1: 0857aba7ad0f6d25a9f12e20027e95da3f3bc73a
+    name:    "os-conf"
+    url:     "https://s3.us-east-2.amazonaws.com/uaa-deployment/os-conf/os-conf-20.0.0-ubuntu-trusty-3541.37-20180813-021947-729622134-20180813021947.tgz"
+    version: "20.0.0"
+    sha1:    "cd72c3ee65a85f62376942acf5ac956faad5e57c"
+    stemcell:
+      os: "ubuntu-trusty"
+      version: "3541.37"
+

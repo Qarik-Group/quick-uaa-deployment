@@ -1,7 +1,11 @@
-- type: replace
-  path: /releases/name=postgres?
+- path: /releases/name=postgres?
+  type: replace
   value:
-    name: postgres
-    version: 22
-    url: https://s3-eu-west-1.amazonaws.com/bucc-compiled-releases/postgres-22-ubuntu-trusty-3468.21-20180214-120705-048141088.tgz
-    sha1: 812926fd626fbeb942d3ab3726982ada021790a4
+    name:    "postgres"
+    url:     "https://s3.us-east-2.amazonaws.com/uaa-deployment/postgres/postgres-29-ubuntu-trusty-3541.37-20180813-022116-440376984-20180813022116.tgz"
+    version: "29"
+    sha1:    "7d282eec9fa1286735ebcae0d316365e378fc740"
+    stemcell:
+      os: "ubuntu-trusty"
+      version: "3541.37"
+

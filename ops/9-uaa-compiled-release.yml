@@ -1,7 +1,11 @@
-- type: replace
-  path: /releases/name=uaa?
+- path: /releases/name=uaa?
+  type: replace
   value:
-    name: uaa
-    version: "60"
-    url: https://s3.amazonaws.com/bosh-compiled-release-tarballs/uaa-60-ubuntu-trusty-3586.24-20180626-235737-955768119-20180626235749.tgz?versionId=FYd8djZY0Ti913cTYkFBw1EcfteGNcTzhtt
-    sha1: 6aaab8dd2bc1e30750b83bc557b3df4d4f911e9f
+    name:    "uaa"
+    url:     "https://s3.us-east-2.amazonaws.com/uaa-deployment/uaa/uaa-60.2-ubuntu-trusty-3541.37-20180813-022455-087894597-20180813022509.tgz"
+    version: "60.2"
+    sha1:    "6bc3637cdc140586dfcf3a44269ad4a9515d3d28"
+    stemcell:
+      os: "ubuntu-trusty"
+      version: "3541.37"
+
