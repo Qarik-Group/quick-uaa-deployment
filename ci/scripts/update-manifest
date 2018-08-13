@@ -4,7 +4,7 @@ set -eu
 
 git clone ${REPO_ROOT:?required} ${REPO_OUT:?required}
 
-STEMCELL_OS=${STEMCELL_OS:-ubuntu-xenial}
+STEMCELL_OS=${STEMCELL_OS:-ubuntu-trusty}
 STEMCELL_VERSION=$(cat stemcell/version)
 STEMCELL_MAJOR_VERSION="${STEMCELL_VERSION%.*}"
 

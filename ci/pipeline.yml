@@ -60,7 +60,7 @@ jobs:
       - get: release
         resource: uaa-release
         trigger: true
-      - get: ubuntu-xenial-stemcell
+      - get: ubuntu-trusty-stemcell
         params: {tarball: false}
     - task: export-release
       config:
@@ -72,7 +72,7 @@ jobs:
             tag:        (( grab meta.image.tag ))
         inputs:
           - name: git
-          - name: ubuntu-xenial-stemcell
+          - name: ubuntu-trusty-stemcell
             path: stemcell
           - name: release
         outputs:
@@ -98,7 +98,7 @@ jobs:
       - get: release
         resource: os-conf-release
         trigger: true
-      - get: ubuntu-xenial-stemcell
+      - get: ubuntu-trusty-stemcell
         params: {tarball: false}
     - task: export-release
       config:
@@ -110,7 +110,7 @@ jobs:
             tag:        (( grab meta.image.tag ))
         inputs:
           - name: git
-          - name: ubuntu-xenial-stemcell
+          - name: ubuntu-trusty-stemcell
             path: stemcell
           - name: release
         outputs:
@@ -136,7 +136,7 @@ jobs:
       - get: release
         resource: postgres-release
         trigger: true
-      - get: ubuntu-xenial-stemcell
+      - get: ubuntu-trusty-stemcell
         params: {tarball: false}
     - task: export-release
       config:
@@ -148,7 +148,7 @@ jobs:
             tag:        (( grab meta.image.tag ))
         inputs:
           - name: git
-          - name: ubuntu-xenial-stemcell
+          - name: ubuntu-trusty-stemcell
             path: stemcell
           - name: release
         outputs:
@@ -173,11 +173,11 @@ resources:
       branch:      (( grab meta.github.branch ))
       private_key: (( grab meta.github.private_key ))
 
-  - name: ubuntu-xenial-stemcell
+  - name: ubuntu-trusty-stemcell
     type: bosh-io-stemcell
     source:
-      name: bosh-warden-boshlite-ubuntu-xenial-go_agent
-      version_family: 97.latest
+      name: bosh-warden-boshlite-ubuntu-trusty-go_agent
+      version_family: 3541.latest
 
   - name: uaa-release
     type: bosh-io-release
