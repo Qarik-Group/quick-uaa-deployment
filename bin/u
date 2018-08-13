@@ -410,6 +410,85 @@ logs() {
     _ssh sudo tail -f /var/vcap/sys/log/*/*.log
 }
 
+offline() {
+  set -e
+
+  yml_filelocation=${project_root}/operators
+  offline_filelocation=${project_root}/offline_resources
+
+  echo "Downloading releases. This can take a while!"
+  rm -f $yml_filelocation/9x*
+  tmp_releases_dir=$(mktemp -d)
+  trap "rm -rf ${tmp_releases_dir}" EXIT
+  mkdir -p ${yml_filelocation} ${offline_filelocation}
+  touch ${yml_filelocation}/dummy.yml
+  trap "rm -rf ${yml_filelocation}/dummy.yml" EXIT
+
+  release_names=$(int --path /releases | grep name: | awk '{print $3}')
+  for release_name in $release_names; do
+    name=$(int --path /releases/name=$release_name/name)
+    version=$(int --path /releases/name=$release_name/version)
+    url=$(int --path /releases/name=$release_name/url)
+    sha1=$(int --path /releases/name=$release_name/sha1)
+    filename="${name}-${version}.tgz"
+
+    cat > "${yml_filelocation}/9x-${name}-offline-compiled-release.yml" <<-YML
+- type: replace
+  path: /releases/name=${name}?
+  value:
+    name: ${name}
+    version: ${version}
+    url: "file://../../offline_resources/${filename}"
+    sha1: ${sha1}
+YML
+
+    # confirm sha1 matches; else re-download
+    if [ ! -f "${offline_filelocation}/${filename}" ]; then
+        echo "Starting to download ${filename}"
+        curl --retry 5 -f -o ${tmp_releases_dir}/${filename} -L ${url}
+
+        mv ${tmp_releases_dir}/${filename} ${offline_filelocation} &>/dev/null
+        echo "Downloaded ${filename}"
+    else
+        echo "Release ${filename} was already downloaded"
+    fi
+  done
+
+  stemcell_url=$(int --path /resource_pools/name=vms/stemcell/url)
+  stemcell_sha1=$(int --path /resource_pools/name=vms/stemcell/sha1)
+  # TODO: getting the name could be handled better
+  stemcell_name=$(echo ${stemcell_url} | cut -d "-" -f 2,3,4,5)
+  # TODO: make get version more robust
+  stemcell_version=$(echo ${stemcell_url} | cut -d= -f2)
+  stemcell_filename="${stemcell_name}-${stemcell_version}.tgz"
+
+  # TODO: test that sha1 is ok
+  if [ ! -f "${offline_filelocation}/${stemcell_filename}" ]; then
+    echo "Starting to download stemcell"
+    curl --retry 5 -s -f -o ${tmp_releases_dir}/${stemcell_filename} -L ${stemcell_url}
+    cat > "${yml_filelocation}/9x-stemcell-offline-stemcell.yml" <<YML
+    - type: replace
+      path: /resource_pools/name=vms/stemcell?
+      value:
+        url: "file://../../${stemcell_filename}"
+        sha1: ${stemcell_sha1}
+YML
+    mv ${tmp_releases_dir}/${stemcell_filename} ${offline_filelocation} &>/dev/null
+    echo "Downloaded stemcell ${stemcell_filename}"
+  else
+    echo "Stemcell ${stemcell_filename} was already downloaded"
+  fi
+
+  echo "Compressing files"
+  # FIXME: for some reason gloabl version variable is not used, but the version of the last release in the manifest
+  version=$(grep uaa-deployment ${repo_root}/.versions | cut -d= -f2)
+  filelocation=${1:-'/tmp'}
+  tarfile=${filelocation}/uaa-deployment-${version}.tar.gz
+  tar -zcf ${tarfile} ${project_root}
+  echo "Your file is located in ${tarfile}"
+
+}
+
 _ensure_bosh_cli_installed
 _ensure_uaa_cli_installed
 case "$1" in
@@ -508,6 +587,11 @@ case "$1" in
     logs)
         shift
         logs "$@"
+        ;;
+
+    offline)
+        shift
+        offline "$@"
         ;;
 
     int)
