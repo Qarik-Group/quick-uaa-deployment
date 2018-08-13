@@ -46,11 +46,101 @@ meta:
 groups:
   - name: (( grab meta.pipeline ))
     jobs:
+    - opsfiles
     - uaa-compile-release
     - os-conf-compile-release
     - postgres-compile-release
 
 jobs:
+- name: opsfiles
+  public: true
+  serial_groups: [testflight]
+  plan:
+    - do:
+      - aggregate:
+        - get: git
+        - get: uaa-compiled-release
+          passed: [uaa-compile-release]
+        - get: os-conf-compiled-release
+          passed: [os-conf-compile-release]
+        - get: postgres-compiled-release
+          passed: [postgres-compile-release]
+        - get: ubuntu-trusty-stemcell
+          trigger: true
+          passed: [uaa-compile-release]
+          params: {tarball: false}
+      - task: update-manifest
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: (( grab meta.image.name ))
+              tag:        (( grab meta.image.tag ))
+          inputs:
+            - name: git
+            - name: ubuntu-trusty-stemcell
+              path: stemcell
+            - name: uaa-compiled-release
+            - name: os-conf-compiled-release
+            - name: postgres-compiled-release
+          outputs:
+            - name: pushme
+          run:
+            path: git/ci/scripts/update-manifest
+          params:
+            REPO_ROOT: git
+            REPO_OUT:  pushme
+            REPO_OUT_BRANCH: develop
+            GIT_EMAIL: (( grab meta.git.email ))
+            GIT_NAME:  (( grab meta.git.name ))
+      # - name: bosh-deploy-testflight
+      #   put: bosh-deploy-testflight
+      #   params:
+      #     manifest: pushme/cfcr.yml
+      #     ops_files:
+      #     - git/ci/operators/testflight.yml
+      #     - git/operators/rename.yml
+      #     vars:
+      #       deployment_name: cfcr-testflight
+      #   on_failure:
+      #     task: show-logs
+      #     config:
+      #       platform: linux
+      #       image_resource:
+      #         type: docker-image
+      #         source:
+      #           repository: (( grab meta.image.name ))
+      #           tag:        (( grab meta.image.tag ))
+      #       outputs:
+      #         - name: pushme
+      #       run:
+      #         path: bosh
+      #         args: [logs, --num, 200]
+      #       params:
+      #         BOSH_DEPLOYMENT:    cfcr-testflight
+      #         BOSH_ENVIRONMENT:   (( grab meta.bosh.target ))
+      #         BOSH_CA_CERT:       (( grab meta.bosh.cacert ))
+      #         BOSH_CLIENT:        (( grab meta.bosh.username ))
+      #         BOSH_CLIENT_SECRET: (( grab meta.bosh.password ))
+      - name: upload-git
+        put: git
+        params:
+          rebase: true
+          repository: pushme
+      # ensure:
+      #   put: bosh-deploy-testflight
+      #   params:
+      #     delete:
+      #       enabled: true
+      #       force:  true
+      #     manifest: pushme/cfcr.yml
+      #     ops_files:
+      #     - git/ci/operators/testflight.yml
+      #     - git/operators/rename.yml
+      #     vars:
+      #       deployment_name: cfcr-testflight
+
 - name: uaa-compile-release
   public: true
   serial: true
