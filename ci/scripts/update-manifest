@@ -8,6 +8,13 @@ STEMCELL_OS=${STEMCELL_OS:-ubuntu-trusty}
 STEMCELL_VERSION=$(cat stemcell/version)
 STEMCELL_MAJOR_VERSION="${STEMCELL_VERSION%.*}"
 
+cat > ${REPO_OUT}/ci/release_version.md <<-MARKDOWN
+## Versions
+
+| Component | Version |
+| --- | --- |
+MARKDOWN
+
 releases=($(ls -d *-compiled-release))
 for release in "${releases[@]}"; do
 
@@ -30,7 +37,16 @@ for release in "${releases[@]}"; do
       version: "${STEMCELL_VERSION}"
 
 YAML
+
+  cat >> ${REPO_OUT}/ci/release_version.md <<-MARKDOWN
+| ${release_name} | v${release_version} |
+MARKDOWN
+
 done
+
+cat >> ${REPO_OUT}/ci/release_version.md <<-MARKDOWN
+| ${STEMCELL_OS} | v${STEMCELL_VERSION} |
+MARKDOWN
 
 if [[ -z $(git config --global user.email) ]]; then
   git config --global user.email "${GIT_EMAIL}"
