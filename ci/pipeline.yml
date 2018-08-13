@@ -61,12 +61,12 @@ jobs:
         - get: git
         - get: uaa-compiled-release
           passed: [uaa-compile-release]
+          trigger: true
         - get: os-conf-compiled-release
           passed: [os-conf-compile-release]
         - get: postgres-compiled-release
           passed: [postgres-compile-release]
         - get: ubuntu-trusty-stemcell
-          trigger: true
           passed: [uaa-compile-release]
           params: {tarball: false}
       - task: update-manifest
