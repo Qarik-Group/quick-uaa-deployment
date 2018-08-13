@@ -15,7 +15,7 @@ To install this project, its `u` helper CLI, and the `uaa` and `bosh` CLIs:
 ```plain
 git clone https://github.com/starkandwayne/uaa-deployment ~/workspace/uaa-deployment
 cd ~/workspace/uaa-deployment
-source <(bin/u env)
+eval "$(bin/u env)"
 ```
 
 To bootstrap UAA inside VirtualBox:
@@ -39,7 +39,7 @@ u auth-client
 To use the `u` and `uaa` CLIs from outside the `uaa-deployment` folder, source the `u env` output:
 
 ```plain
-source <(~/workspace/uaa-deployment/bin/u env)
+eval "$(~/workspace/uaa-deployment/bin/u env)"
 uaa clients
 ```
 
@@ -60,7 +60,7 @@ export UAA_CA_CERT_FILE='/var/folders/wd/xnncwqp96rj0v1y2nms64mq80000gn/T/tmp.lD
 Confirm that `$UAA_URL` points to your UAA, and that `$UAA_CA_CERT_FILE` is its custom root CA:
 
 ```plain
-source <(~/workspace/uaa-deployment/bin/u env)
+eval "$(~/workspace/uaa-deployment/bin/u env)"
 curl --cacert $UAA_CA_CERT_FILE -H "Accept: application/json" $UAA_URL/login
 ```
 
@@ -75,4 +75,3 @@ The JSON output might look similar to:
 You can find a selection of example client applications at:
 
 * https://github.com/starkandwayne/ultimate-guide-to-uaa-examples
-
