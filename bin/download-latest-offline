@@ -1,0 +1,17 @@
+#!/bin/bash
+
+set -eu
+
+branch=${BRANCH:-master}
+cpi=virtualbox
+version=$(curl -s https://raw.githubusercontent.com/starkandwayne/uaa-deployment/$branch/.versions | grep uaa-deployment | cut -d= -f2)
+url="https://cdn-cfcommunity.starkandwayne.com/offline/uaa-deployment-offline-${cpi}-${version}.tar.gz"
+
+if [[ "$(which wget)X" != "X" ]]; then
+  wget $url "$@"
+elif [[ "$(which curl)X" != "X" ]]; then
+  curl -O $url "$@"
+else
+  (>&2 echo "Please install either 'wget' or 'curl' and run script again.")
+  exit 1
+fi

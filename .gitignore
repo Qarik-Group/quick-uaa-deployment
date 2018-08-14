@@ -9,3 +9,4 @@ tmp
 /bin/bbr
 /vars.yml
 /vars.yml.bck
+uaa-deployment-offline-*.tar.gz
