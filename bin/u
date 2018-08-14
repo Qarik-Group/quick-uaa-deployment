@@ -426,20 +426,19 @@ offline() {
 
   release_names=$(int --path /releases | grep name: | awk '{print $3}')
   for release_name in $release_names; do
-    name=$(int --path /releases/name=$release_name/name)
-    version=$(int --path /releases/name=$release_name/version)
-    url=$(int --path /releases/name=$release_name/url)
-    sha1=$(int --path /releases/name=$release_name/sha1)
-    filename="${name}-${version}.tgz"
+    release_version=$(int --path /releases/name=$release_name/version)
+    release_url=$(int --path /releases/name=$release_name/url)
+    release_sha1=$(int --path /releases/name=$release_name/sha1)
+    filename="${release_name}-${release_version}.tgz"
 
-    cat > "${yml_filelocation}/9x-${name}-offline-compiled-release.yml" <<-YML
+    cat > "${yml_filelocation}/9x-${release_name}-offline-compiled-release.yml" <<-YML
 - type: replace
-  path: /releases/name=${name}?
+  path: /releases/name=${release_name}?
   value:
-    name: ${name}
-    version: ${version}
-    url: "file://../../offline_resources/${filename}"
-    sha1: ${sha1}
+    name:    ${release_name}
+    version: ${release_version}
+    sha1:    ${release_sha1}
+    url:     file://../../offline_resources/${filename}
 YML
 
     # confirm sha1 matches; else re-download
@@ -481,12 +480,14 @@ YML
 
   echo "Compressing files"
   # FIXME: for some reason gloabl version variable is not used, but the version of the last release in the manifest
-  version=$(grep uaa-deployment ${repo_root}/.versions | cut -d= -f2)
   filelocation=${1:-'/tmp'}
-  tarfile=${filelocation}/uaa-deployment-${version}.tar.gz
-  tar -zcf ${tarfile} ${project_root}
+  tarfilename=uaa-deployment-offline-${version}.tar.gz
+  tarfile=${filelocation}/${tarfilename}
+  tar -zcf ${tarfile} -C ${project_root} README.md bin offline_resources operators ops ops-examples src .versions .envrc .gitignore
   echo "Your file is located in ${tarfile}"
-
+  echo "Unpack with:"
+  echo "  mkdir -p ~/workspace/uaa-deployment"
+  echo "  tar xfz ${tarfilename} -C ~/workspace/uaa-deployment"
 }
 
 _ensure_bosh_cli_installed
