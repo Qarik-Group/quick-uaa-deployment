@@ -412,6 +412,10 @@ logs() {
 
 offline() {
   set -e
+  if [[ ! -f $vars_file ]]; then
+    echo "WARN: missing vars.yml; defaulting to virtualbox"
+    validate_vars_file
+  fi
 
   yml_filelocation=${project_root}/operators
   offline_filelocation=${project_root}/offline_resources
