@@ -2,7 +2,7 @@
   type: replace
   value:
     name:    "postgres"
-    url:     "https://s3.us-east-2.amazonaws.com/uaa-deployment/postgres/postgres-29-ubuntu-trusty-3541.37-20180813-022116-440376984-20180813022116.tgz"
+    url:     "https://cdn-cfcommunity.starkandwayne.com/postgres/postgres-29-ubuntu-trusty-3541.37-20180813-022116-440376984-20180813022116.tgz"
     version: "29"
     sha1:    "7d282eec9fa1286735ebcae0d316365e378fc740"
     stemcell:

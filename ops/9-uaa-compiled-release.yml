@@ -2,7 +2,7 @@
   type: replace
   value:
     name:    "uaa"
-    url:     "https://s3.us-east-2.amazonaws.com/uaa-deployment/uaa/uaa-60.2-ubuntu-trusty-3541.37-20180813-022455-087894597-20180813022509.tgz"
+    url:     "https://cdn-cfcommunity.starkandwayne.com/uaa/uaa-60.2-ubuntu-trusty-3541.37-20180813-022455-087894597-20180813022509.tgz"
     version: "60.2"
     sha1:    "6bc3637cdc140586dfcf3a44269ad4a9515d3d28"
     stemcell:
