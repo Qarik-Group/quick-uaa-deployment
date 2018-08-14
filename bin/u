@@ -424,7 +424,7 @@ logs() {
 offline() {
   set -eu
   if [[ ! -f $vars_file ]]; then
-    echo "WARN: missing vars.yml; defaulting to virtualbox"
+    (>&2 echo "WARN: missing vars.yml; defaulting to virtualbox")
     validate_vars_file
   fi
 
@@ -433,15 +433,15 @@ offline() {
   echo "Downloading all the things. This can take a while!"
   echo
 
-  _offline_bosh_cli
-  _offline_uaa_cli
-
   rm -f ${operators_filelocation}/9x*
   tmp_releases_dir=$(mktemp -d)
   trap "rm -rf ${tmp_releases_dir}" EXIT
   mkdir -p ${operators_filelocation} ${offline_resources}
   touch ${operators_filelocation}/dummy.yml
   trap "rm -rf ${operators_filelocation}/dummy.yml" EXIT
+
+  _offline_bosh_cli
+  _offline_uaa_cli
 
   release_names=$(int --path /releases | grep name: | awk '{print $3}')
   for release_name in $release_names; do
