@@ -13,8 +13,8 @@ The name of the helper application is `quaa` for "Quick UAA". Quick and producti
 To install this project, its `quaa` helper CLI, and the `uaa` and `bosh` CLIs:
 
 ```plain
-git clone https://github.com/starkandwayne/uaa-deployment ~/workspace/uaa-deployment
-cd ~/workspace/uaa-deployment
+git clone https://github.com/starkandwayne/quick-uaa-deployment ~/workspace/quick-uaa-deployment
+cd ~/workspace/quick-uaa-deployment
 eval "$(bin/quaa env)"
 ```
 
@@ -45,7 +45,7 @@ quaa auth-client
 To use the `quaa` and `uaa` CLIs from outside the `uaa-deployment` folder, source the `quaa env` output:
 
 ```plain
-eval "$(~/workspace/uaa-deployment/bin/quaa env)"
+eval "$(~/workspace/quick-uaa-deployment/bin/quaa env)"
 uaa clients
 ```
 
@@ -53,7 +53,7 @@ The `quaa env` output will setup various environment variables that you can use 
 
 ```plain
 $ quaa env
-export PATH="/Users/drnic/workspace/uaa-deployment/bin:..."
+export PATH="/Users/drnic/workspace/quick-uaa-deployment/bin:..."
 export UAA_URL=https://192.168.50.6:8443
 export UAA_CA_CERT='-----BEGIN CERTIFICATE-----
 MIIDFDCCAfygAwIBAgIRAPvv3CgQ/brgiaLZx9oozVQwDQYJKoZIhvcNAQELBQAw
@@ -66,7 +66,7 @@ export UAA_CA_CERT_FILE='/var/folders/wd/xnncwqp96rj0v1y2nms64mq80000gn/T/tmp.lD
 Confirm that `$UAA_URL` points to your UAA, and that `$UAA_CA_CERT_FILE` is its custom root CA:
 
 ```plain
-eval "$(~/workspace/uaa-deployment/bin/quaa env)"
+eval "$(~/workspace/quick-uaa-deployment/bin/quaa env)"
 curl --cacert $UAA_CA_CERT_FILE -H "Accept: application/json" $UAA_URL/login
 ```
 
@@ -95,24 +95,24 @@ The instructions above will progressively download any missing CLIs, BOSH releas
 To discover the latest offline tarball, and download it:
 
 ```plain
-curl -s https://raw.githubusercontent.com/starkandwayne/uaa-deployment/master/bin/download-latest-offline | bash
+curl -s https://raw.githubusercontent.com/starkandwayne/quick-uaa-deployment/master/bin/download-latest-offline | bash
 ```
 
 To unpack it:
 
 ```plain
-mkdir -p ~/workspace/uaa-deployment
-tar xfz uaa-deployment-offline-*.tar.gz -C ~/workspace/uaa-deployment
+mkdir -p ~/workspace/quick-uaa-deployment
+tar xfz uaa-deployment-offline-*.tar.gz -C ~/workspace/quick-uaa-deployment
 ```
 
-You can now use the directory `~/workspace/uaa-deployment` as per the rest of the article above.
+You can now use the directory `~/workspace/quick-uaa-deployment` as per the rest of the article above.
 
 ```plain
-cd ~/workspace/uaa-deployment
+cd ~/workspace/quick-uaa-deployment
 eval "$(bin/quaa env)"
 quaa up
 ```
 
-Currently the offline download includes CLIs for both Linux & Darwin, but assumes you are deploying to VirtualBox. If you ultimately target a different CPI then the `u up` command will download the missing CPI and stemcell files.
+Currently the offline download includes CLIs for both Linux & Darwin, but assumes you are deploying to VirtualBox. If you ultimately target a different CPI then the `quaa up` command will download the missing CPI and stemcell files.
 
 Please create an issue if you would like us to publish additional offline tarballs for your target CPI.
