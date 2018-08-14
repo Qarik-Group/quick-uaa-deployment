@@ -20,7 +20,7 @@ eval "$(bin/quaa env)"
 
 Alternately, see [Offline Download](#offline-download) section to download a 900+Mb tarball containing the CLIs, BOSH releases, and stemcell for VirtualBox deployment.
 
-To bootstrap UAA inside VirtualBox:
+To quickly bootstrap UAA inside VirtualBox:
 
 ```plain
 quaa up
@@ -28,10 +28,12 @@ quaa up
 
 Note, the instructions above will download approximately 600-900Mb of CLIs, BOSH releases, and BOSH stemcells on your first time.
 
-To bootstrap UAA on AWS:
+To quickly bootstrap UAA on AWS, Google, or Azure respectively:
 
 ```plain
 quaa up --cpi aws
+quaa up --cpi google
+quaa up --cpi azure
 ```
 
 To target and authorize the [`uaa` CLI](https://github.com/cloudfoundry-incubator/uaa-cli):
