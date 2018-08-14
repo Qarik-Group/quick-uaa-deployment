@@ -481,7 +481,7 @@ YML
   echo "Compressing files"
   # FIXME: for some reason gloabl version variable is not used, but the version of the last release in the manifest
   filelocation=${1:-'/tmp'}
-  tarfilename=uaa-deployment-offline-${version}.tar.gz
+  tarfilename=uaa-deployment-offline-$(cpi)-${version}.tar.gz
   tarfile=${filelocation}/${tarfilename}
   tar -zcf ${tarfile} -C ${project_root} README.md bin offline_resources operators ops ops-examples src .versions .envrc .gitignore
   echo "Your file is located in ${tarfile}"
