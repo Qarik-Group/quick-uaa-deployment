@@ -319,19 +319,23 @@ _ensure_bosh_cli_installed() {
     local cli_path=${repo_root}/bin/bosh
 
     if ! ( [ -f ${cli_path} ] && ${cli_path} --version | head -n 1 | grep ${version} > /dev/null); then
-
-      (>&2 echo "installing bosh cli '${version}' into: ${repo_root}/bin/")
-      pushd $(mktemp -d)
-      if [ "$(platform)" == "darwin" ]; then
-          curl -s -L >bosh "${url}-${version}-darwin-amd64"
-          chmod +x bosh
-          mv bosh ${repo_root}/bin/
+      if [[ -f ${offline_resources}/bosh-$version-$(platform)-amd64 ]]; then
+        (>&2 echo "copying bosh cli '${version}' into ${repo_root}/bin/")
+        cp ${offline_resources}/bosh-$version-$(platform)-amd64 ${repo_root}/bin/bosh
       else
-          curl -s -L >bosh "${url}-${version}-linux-amd64"
-          chmod +x bosh
-          mv bosh ${repo_root}/bin/
+        (>&2 echo "installing bosh cli '${version}' into: ${repo_root}/bin/")
+        pushd $(mktemp -d)
+        if [ "$(platform)" == "darwin" ]; then
+            curl -s -L >bosh "${url}-${version}-darwin-amd64"
+            chmod +x bosh
+            mv bosh ${repo_root}/bin/
+        else
+            curl -s -L >bosh "${url}-${version}-linux-amd64"
+            chmod +x bosh
+            mv bosh ${repo_root}/bin/
+        fi
+        popd
       fi
-      popd
     fi
 }
 
@@ -341,12 +345,17 @@ _ensure_uaa_cli_installed() {
     local cli_path=${repo_root}/bin/uaa
 
     if ! ( [ -f ${cli_path} ] && ${cli_path} version | head -n 1 | grep ${version} > /dev/null); then
-      (>&2 echo "installing uaa cli '${version}' into: ${repo_root}/bin/")
-      pushd $(mktemp -d)
-      curl -s -L >uaa "${url}/v${version}/uaa-$(platform)-amd64"
-      chmod +x uaa
-      mv uaa ${repo_root}/bin/
-      popd
+      if [[ -f ${offline_resources}/uaa-$version-$(platform)-amd64 ]]; then
+        (>&2 echo "copying uaa cli '${version}' into ${repo_root}/bin/")
+        cp ${offline_resources}/uaa-$version-$(platform)-amd64 ${repo_root}/bin/uaa
+      else
+        (>&2 echo "installing uaa cli '${version}' into: ${repo_root}/bin/")
+        pushd $(mktemp -d)
+        curl -s -L >uaa "${url}/v${version}/uaa-$(platform)-amd64"
+        chmod +x uaa
+        mv uaa ${repo_root}/bin/
+        popd
+      fi
     fi
 }
 
