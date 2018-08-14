@@ -503,7 +503,7 @@ YML
   filelocation=${1:-'/tmp'}
   tarfilename=uaa-deployment-offline-$(cpi)-${version}.tar.gz
   tarfile=${filelocation}/${tarfilename}
-  tar -zcf ${tarfile} -C ${project_root} README.md bin offline_resources operators ops ops-examples src .versions .envrc .gitignore
+  tar -zcf ${tarfile} -C ${project_root} README.md bin/u offline_resources operators ops ops-examples src .versions .envrc .gitignore
   echo "Your file is located in ${tarfile}"
   echo "Unpack with:"
   echo "  mkdir -p ~/workspace/uaa-deployment"
