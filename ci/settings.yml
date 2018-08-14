@@ -8,6 +8,7 @@ meta:
     region_name: us-east-2
     access_key: ((aws-cfcommunity-access))
     secret_key: ((aws-cfcommunity-secret))
+    cloudfront_url: https://cdn-cfcommunity.starkandwayne.com
 
   git:
     email:  ((git-commit-email))
