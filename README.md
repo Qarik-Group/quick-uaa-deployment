@@ -18,11 +18,15 @@ cd ~/workspace/uaa-deployment
 eval "$(bin/u env)"
 ```
 
+Alternately, see [Offline Download](#offline-download) section to download a 900+Mb tarball containing the CLIs, BOSH releases, and stemcell for VirtualBox deployment.
+
 To bootstrap UAA inside VirtualBox:
 
 ```plain
 u up
 ```
+
+Note, the instructions above will download approximately 600-900Mb of CLIs, BOSH releases, and BOSH stemcells on your first time.
 
 To bootstrap UAA on AWS:
 
@@ -75,3 +79,32 @@ The JSON output might look similar to:
 You can find a selection of example client applications at:
 
 * https://github.com/starkandwayne/ultimate-guide-to-uaa-examples
+
+## Offline Download
+
+The instructions above will progressively download any missing CLIs, BOSH releases, and BOSH stemcell. On your first time this can add up to almost 1G. If you need to download everything at once and then proceed with the deployment at a later time we are publishing an offline tarball via CDN.
+
+To discover the latest offline tarball, and download it:
+
+```plain
+curl -s https://raw.githubusercontent.com/starkandwayne/uaa-deployment/master/bin/download-latest-offline | bash
+```
+
+To unpack it:
+
+```plain
+mkdir -p ~/workspace/uaa-deployment
+tar xfz uaa-deployment-offline-*.tar.gz -C ~/workspace/uaa-deployment
+```
+
+You can now use the directory `~/workspace/uaa-deployment` as per the rest of the article above.
+
+```plain
+cd ~/workspace/uaa-deployment
+eval "$(bin/u env)"
+u up
+```
+
+Currently the offline download includes CLIs for both Linux & Darwin, but assumes you are deploying to VirtualBox. If you ultimately target a different CPI then the `u up` command will download the missing CPI and stemcell files.
+
+Please create an issue if you would like us to publish additional offline tarballs for your target CPI.
