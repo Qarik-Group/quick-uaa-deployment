@@ -159,6 +159,7 @@ usage() {
     echo "  auth-client -- configures uaa cli as a client only"
     echo "  url -- URL for UAA"
     echo "  cacert -- path to CA certificate"
+    echo "  offline -- create tarball with all CLIs and BOSH releases"
     exit 1
 }
 
