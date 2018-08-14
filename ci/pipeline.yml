@@ -46,12 +46,37 @@ meta:
 groups:
   - name: (( grab meta.pipeline ))
     jobs:
+    - offline
     - opsfiles
     - uaa-compile-release
     - os-conf-compile-release
     - postgres-compile-release
 
 jobs:
+- name: offline
+  public: true
+  serial_groups: [testflight]
+  plan:
+    - do:
+      - get: git
+      - task: build-offline
+        config:
+          platform: linux
+          image_resource:
+            type: docker-image
+            source:
+              repository: (( grab meta.image.name ))
+              tag:        (( grab meta.image.tag ))
+          inputs:
+            - name: git
+          outputs:
+            - name: offline
+          run:
+            path: git/ci/scripts/build-offline
+      - put: offline-virtualbox
+        params:
+          file: "offline/uaa-deployment-offline-virtualbox-*.tar.gz"
+
 - name: opsfiles
   public: true
   serial_groups: [testflight]
@@ -310,6 +335,15 @@ resources:
       access_key_id:     (( grab meta.aws.access_key ))
       secret_access_key: (( grab meta.aws.secret_key ))
       regexp:            "postgres/.*-(\\d+).tgz"
+
+  - name: offline-virtualbox
+    type: s3
+    source:
+      bucket:            (( grab meta.aws.bucket ))
+      region_name:       (( grab meta.aws.region_name ))
+      access_key_id:     (( grab meta.aws.access_key ))
+      secret_access_key: (( grab meta.aws.secret_key ))
+      regexp:            "offline/uaa-deployment-offline-virtualbox.*([\\d.]+).tar.gz"
 
   # - name: notify
   #   type: slack-notification

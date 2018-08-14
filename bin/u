@@ -411,22 +411,22 @@ logs() {
 }
 
 offline() {
-  set -e
+  set -eu
   if [[ ! -f $vars_file ]]; then
     echo "WARN: missing vars.yml; defaulting to virtualbox"
     validate_vars_file
   fi
 
-  yml_filelocation=${project_root}/operators
+  operators_filelocation=${project_root}/operators
   offline_filelocation=${project_root}/offline_resources
 
   echo "Downloading releases. This can take a while!"
-  rm -f $yml_filelocation/9x*
+  rm -f ${operators_filelocation}/9x*
   tmp_releases_dir=$(mktemp -d)
   trap "rm -rf ${tmp_releases_dir}" EXIT
-  mkdir -p ${yml_filelocation} ${offline_filelocation}
-  touch ${yml_filelocation}/dummy.yml
-  trap "rm -rf ${yml_filelocation}/dummy.yml" EXIT
+  mkdir -p ${operators_filelocation} ${offline_filelocation}
+  touch ${operators_filelocation}/dummy.yml
+  trap "rm -rf ${operators_filelocation}/dummy.yml" EXIT
 
   release_names=$(int --path /releases | grep name: | awk '{print $3}')
   for release_name in $release_names; do
@@ -435,7 +435,7 @@ offline() {
     release_sha1=$(int --path /releases/name=$release_name/sha1)
     filename="${release_name}-${release_version}.tgz"
 
-    cat > "${yml_filelocation}/9x-${release_name}-offline-compiled-release.yml" <<-YML
+    cat > "${operators_filelocation}/9x-${release_name}-offline-compiled-release.yml" <<-YML
 - type: replace
   path: /releases/name=${release_name}?
   value:
@@ -448,7 +448,7 @@ YML
     # confirm sha1 matches; else re-download
     if [ ! -f "${offline_filelocation}/${filename}" ]; then
         echo "Starting to download ${filename}"
-        curl --retry 5 -f -o ${tmp_releases_dir}/${filename} -L ${url}
+        curl --retry 5 -f -o ${tmp_releases_dir}/${filename} -L ${release_url}
 
         mv ${tmp_releases_dir}/${filename} ${offline_filelocation} &>/dev/null
         echo "Downloaded ${filename}"
@@ -469,7 +469,7 @@ YML
   if [ ! -f "${offline_filelocation}/${stemcell_filename}" ]; then
     echo "Starting to download stemcell"
     curl --retry 5 -s -f -o ${tmp_releases_dir}/${stemcell_filename} -L ${stemcell_url}
-    cat > "${yml_filelocation}/9x-stemcell-offline-stemcell.yml" <<YML
+    cat > "${operators_filelocation}/9x-stemcell-offline-stemcell.yml" <<YML
     - type: replace
       path: /resource_pools/name=vms/stemcell?
       value:
