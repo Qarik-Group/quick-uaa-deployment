@@ -14,6 +14,8 @@ if [[ "${BBL_STATE_DIR:-X}" != "X" ]]; then
 fi
 
 project_root=${UAADEPLOY_PROJECT_ROOT:-${repo_root}}
+offline_resources=${project_root}/offline_resources
+
 state=${UAADEPLOY_STATE_ROOT:-${project_root}/state}
 vars_file=${UAADEPLOY_VARS_FILE:-${project_root}/vars.yml}
 state_json_path=${UAADEPLOY_STATE_STORE:-${state}/state.json}
@@ -417,14 +419,18 @@ offline() {
     validate_vars_file
   fi
 
-  operators_filelocation=${project_root}/operators
-  offline_filelocation=${project_root}/offline_resources
+  export operators_filelocation=${project_root}/operators
 
-  echo "Downloading releases. This can take a while!"
+  echo "Downloading all the things. This can take a while!"
+  echo
+
+  _offline_bosh_cli
+  _offline_uaa_cli
+
   rm -f ${operators_filelocation}/9x*
   tmp_releases_dir=$(mktemp -d)
   trap "rm -rf ${tmp_releases_dir}" EXIT
-  mkdir -p ${operators_filelocation} ${offline_filelocation}
+  mkdir -p ${operators_filelocation} ${offline_resources}
   touch ${operators_filelocation}/dummy.yml
   trap "rm -rf ${operators_filelocation}/dummy.yml" EXIT
 
@@ -446,11 +452,11 @@ offline() {
 YML
 
     # confirm sha1 matches; else re-download
-    if [ ! -f "${offline_filelocation}/${filename}" ]; then
+    if [ ! -f "${offline_resources}/${filename}" ]; then
         echo "Starting to download ${filename}"
         curl --retry 5 -f -o ${tmp_releases_dir}/${filename} -L ${release_url}
 
-        mv ${tmp_releases_dir}/${filename} ${offline_filelocation} &>/dev/null
+        mv ${tmp_releases_dir}/${filename} ${offline_resources} &>/dev/null
         echo "Downloaded ${filename}"
     else
         echo "Release ${filename} was already downloaded"
@@ -466,7 +472,7 @@ YML
   stemcell_filename="${stemcell_name}-${stemcell_version}.tgz"
 
   # TODO: test that sha1 is ok
-  if [ ! -f "${offline_filelocation}/${stemcell_filename}" ]; then
+  if [ ! -f "${offline_resources}/${stemcell_filename}" ]; then
     echo "Starting to download stemcell"
     curl --retry 5 -s -f -o ${tmp_releases_dir}/${stemcell_filename} -L ${stemcell_url}
     cat > "${operators_filelocation}/9x-stemcell-offline-stemcell.yml" <<YML
@@ -476,7 +482,7 @@ YML
         url: "file://../../${stemcell_filename}"
         sha1: ${stemcell_sha1}
 YML
-    mv ${tmp_releases_dir}/${stemcell_filename} ${offline_filelocation} &>/dev/null
+    mv ${tmp_releases_dir}/${stemcell_filename} ${offline_resources} &>/dev/null
     echo "Downloaded stemcell ${stemcell_filename}"
   else
     echo "Stemcell ${stemcell_filename} was already downloaded"
@@ -492,6 +498,42 @@ YML
   echo "Unpack with:"
   echo "  mkdir -p ~/workspace/uaa-deployment"
   echo "  tar xfz ${tarfilename} -C ~/workspace/uaa-deployment"
+}
+
+_offline_bosh_cli() {
+  tmp_releases_dir=$(mktemp -d)
+  trap "rm -rf ${tmp_releases_dir}" EXIT
+
+  local url="https://s3.amazonaws.com/bosh-cli-artifacts/bosh-cli"
+  local version=$(grep bosh ${repo_root}/.versions | cut -d= -f2)
+  if [[ ! -f ${offline_resources:?required}/bosh-${version}-darwin-amd64 ]]; then
+    echo "Downloading bosh CLI v${version} (darwin)..."
+    curl -L >${tmp_releases_dir}/bosh-${version}-darwin-amd64 ${url}-${version}-darwin-amd64
+    echo "Downloading bosh CLI v${version} (linux)..."
+    curl -L >${tmp_releases_dir}/bosh-${version}-linux-amd64  ${url}-${version}-linux-amd64
+    chmod +x ${tmp_releases_dir}/bosh*
+    mv ${tmp_releases_dir}/bosh* ${offline_resources}/ &>/dev/null
+  else
+    echo "bosh CLIs already downloaded"
+  fi
+}
+
+_offline_uaa_cli() {
+  tmp_releases_dir=$(mktemp -d)
+  trap "rm -rf ${tmp_releases_dir}" EXIT
+
+  local url="https://github.com/starkandwayne/uaa-cli-releases/releases/download"
+  local version=$(grep uaa= ${repo_root}/.versions | cut -d= -f2)
+  if [[ ! -f ${offline_resources:?required}/uaa-${version}-darwin-amd64 ]]; then
+    echo "Downloading uaa CLI v${version} (darwin)..."
+    curl -L >${tmp_releases_dir}/uaa-${version}-darwin-amd64 ${url}/v${version}/uaa-darwin-amd64
+    echo "Downloading uaa CLI v${version} (linux)..."
+    curl -L >${tmp_releases_dir}/uaa-${version}-linux-amd64  ${url}/v${version}/uaa-linux-amd64
+    chmod +x ${tmp_releases_dir}/uaa*
+    mv ${tmp_releases_dir}/uaa* ${offline_resources}/ &>/dev/null
+  else
+    echo "uaa CLIs already downloaded"
+  fi
 }
 
 _ensure_bosh_cli_installed
