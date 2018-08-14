@@ -68,6 +68,12 @@ eval "$(~/workspace/uaa-deployment/bin/quaa env)"
 curl --cacert $UAA_CA_CERT_FILE -H "Accept: application/json" $UAA_URL/login
 ```
 
+As an aside, there are also `quaa url` and `quaa cacert` helpers:
+
+```plain
+curl --cacert $(quaa cacert) -H 'Accept: application/json' $(quaa url)/login
+```
+
 The JSON output might look similar to:
 
 ```json
