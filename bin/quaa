@@ -150,10 +150,10 @@ usage() {
     echo "Quick UAA Deployment v${version:-(development)}"
     echo "  up -- creates the UAA VM with bosh create-env"
     echo "  down -- deletes VM with bosh delete-env - can be used with --clean"
-    echo "  clean -- start with a clean enviorment - use this only after you've torn down your env"
+    echo "  clean -- start with a clean environment - use this only after you've torn down your env"
     echo "  ssh -- ssh into the UAA VM"
     echo "  logs -- streaming logs from UAA/Postgres"
-    echo "  env -- sourceable envrionment variables for cli clients"
+    echo "  env -- sourceable environment variables for cli clients"
     echo "  int -- wrapper for 'bosh int' for the bosh manifest"
     echo "  info -- UAA information"
     # echo "  bbr -- backup & restore UAA" - WIP
@@ -221,7 +221,7 @@ up() {
 
 down() {
     if [ ! -e $vars_file ]; then
-      echo "please create a enviroment first with 'u up'"
+      echo "please create a environment first with 'u up'"
       exit 1
     fi
 
@@ -232,7 +232,7 @@ down() {
 clean() {
     if [[ -f vars.yml ]]; then
         if curl -m 1 -k -s "https://$(bosh int <(u vars) --path /internal_ip):8443/login" | grep Version &>/dev/null ; then
-            echo "Your UAA enviroment is still running, please tear it down with 'u down --clean'"
+            echo "Your UAA environment is still running, please tear it down with 'u down --clean'"
             exit 1
         fi
         rm -rf ${state}
