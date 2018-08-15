@@ -83,6 +83,7 @@ validate_cpi() {
         echo $(cpis | xargs)
         exit 1
     fi
+    _ensure_cpi_dependencies
 }
 
 validate_cpi_flags() {
@@ -312,6 +313,30 @@ _bbr() {
 
     local user=$(int --path /instance_groups/name=bosh/jobs/name=user_add/properties/users/0/name)
     ${cli_path} director --host $(ip) --username ${user} --private-key-path $(ssh_private_key) "$@"
+}
+
+_ensure_dependencies() {
+  local errors=
+  if [[ "$(which curl)X" == "X" ]]; then
+    (>&2 echo "ERROR: please install 'curl'")
+    errors=1
+  fi
+  if [[ "$(which ruby)X" == "X" ]]; then
+    (>&2 echo "ERROR: please install 'ruby'")
+    (>&2 echo "  See https://bosh.io/docs/cli-v2-install/#additional-dependencies")
+    errors=1
+  fi
+  [[ "${errors:-X}" == "X" ]] || { exit 1; }
+}
+
+_ensure_cpi_dependencies() {
+  case $(cpi) in
+    virtualbox)
+      [[ "$(which VirtualBox)X" == "X" ]] && { echo "ERROR: please install VirtualBox"; exit 1; }
+      ;;
+    *)
+      ;;
+  esac
 }
 
 _ensure_bosh_cli_installed() {
@@ -546,6 +571,7 @@ _offline_uaa_cli() {
   fi
 }
 
+_ensure_dependencies
 _ensure_bosh_cli_installed
 _ensure_uaa_cli_installed
 case "$1" in
