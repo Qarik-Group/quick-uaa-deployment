@@ -332,7 +332,11 @@ _ensure_dependencies() {
 _ensure_cpi_dependencies() {
   case $(cpi) in
     virtualbox)
-      [[ "$(which VirtualBox)X" == "X" ]] && { echo "ERROR: please install VirtualBox"; exit 1; }
+      [[ "$(which VirtualBox)X" == "X" ]] && {
+        echo "ERROR: please install VirtualBox"
+        echo "  See https://www.virtualbox.org/wiki/Downloads"
+        exit 1
+      }
       ;;
     *)
       ;;
