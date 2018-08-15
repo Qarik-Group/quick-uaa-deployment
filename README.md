@@ -4,11 +4,11 @@
 quaa up
 ```
 
-This project is dedicated to making it easy to bring up secure, production-ready UAA on a single VM locally or on any cloud supported by BOSH, and to upgrade it in future. You do not need to have BOSH already installed; instead we use the standalone `bosh create-env` command.
+This project is dedicated to making it easy to bring up secure UAA on a single VM locally or on any cloud supported by BOSH, and to upgrade it in future. You do not need to have BOSH already installed; instead we use the standalone `bosh create-env` command.
 
 This project is hugely influenced by, and code/files copied from, [BUCC](https://github.com/starkandwayne/bucc).
 
-The name of the helper application is `quaa` for "Quick UAA". Quick and production-ready UAA.
+The name of the helper application is `quaa` for "Quick UAA". Quick and secure UAA.
 
 To install this project, its `quaa` helper CLI, and the `uaa` and `bosh` CLIs:
 
