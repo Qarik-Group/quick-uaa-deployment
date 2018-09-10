@@ -2,10 +2,10 @@
   type: replace
   value:
     name:    "uaa"
-    url:     "https://cdn-cfcommunity.starkandwayne.com/uaa/uaa-60.2-ubuntu-trusty-3541.37-20180813-022455-087894597-20180813022509.tgz"
-    version: "60.2"
-    sha1:    "6bc3637cdc140586dfcf3a44269ad4a9515d3d28"
+    url:     "https://cdn-cfcommunity.starkandwayne.com/uaa/uaa-61.0-ubuntu-trusty-3541.46-20180910-170755-616937215-20180910170809.tgz"
+    version: "61.0"
+    sha1:    "d4882030a9f34b309498f1ffee36dab9b5291a4f"
     stemcell:
       os: "ubuntu-trusty"
-      version: "3541.37"
+      version: "3541.46"
 

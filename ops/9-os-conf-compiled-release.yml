@@ -7,5 +7,5 @@
     sha1:    "cd72c3ee65a85f62376942acf5ac956faad5e57c"
     stemcell:
       os: "ubuntu-trusty"
-      version: "3541.37"
+      version: "3541.46"
 

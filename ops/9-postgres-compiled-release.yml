@@ -2,10 +2,10 @@
   type: replace
   value:
     name:    "postgres"
-    url:     "https://cdn-cfcommunity.starkandwayne.com/postgres/postgres-29-ubuntu-trusty-3541.37-20180813-022116-440376984-20180813022116.tgz"
-    version: "29"
-    sha1:    "7d282eec9fa1286735ebcae0d316365e378fc740"
+    url:     "https://cdn-cfcommunity.starkandwayne.com/postgres/postgres-30-ubuntu-trusty-3541.46-20180904-145356-655707158-20180904145357.tgz"
+    version: "30"
+    sha1:    "27a5139de1f31896ea468e8ba857f1776624d83a"
     stemcell:
       os: "ubuntu-trusty"
-      version: "3541.37"
+      version: "3541.46"
 
